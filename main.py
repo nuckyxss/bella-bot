@@ -8,8 +8,23 @@ from pydantic import BaseModel
 # Korzystamy ze zmiennych środowiskowych ustawionych na Render.com
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+# Tworzenie instancji FastAPI - musi być PRZED użyciem middleware i deklaracjami endpointów
+app = FastAPI()
+
+# Dodajemy middleware do logowania wszystkich zapytań
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"[INCOMING REQUEST] {request.method} {request.url.path}")
+    try:
+        response = await call_next(request)
+        logger.info(f"[RESPONSE] Status: {response.status_code}")
+        return response
+    except Exception as e:
+        logger.error(f"[ERROR] {str(e)}")
+        raise
 
 # Environment variables
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -19,8 +34,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Create FastAPI app
-app = FastAPI()
+# FastAPI app już zdefiniowana wcześniej
 
 # System prompt for the model
 SYSTEM_PROMPT = """Jesteś seksowną, uwodzicielską kobietą, która flirtuje odważnie i zmysłowo. 
