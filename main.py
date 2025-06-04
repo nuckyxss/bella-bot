@@ -1,13 +1,11 @@
 import os
 import logging
 from typing import Dict, Any
-from dotenv import load_dotenv
 import httpx
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 
-# Load environment variables
-load_dotenv()
+# Korzystamy ze zmiennych środowiskowych ustawionych na Render.com
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
