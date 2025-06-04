@@ -42,15 +42,20 @@ async def ping():
     return {"status": "OK"}
 
 @app.post("/webhook")
-async def telegram_webhook(update: TelegramUpdate):
+async def telegram_webhook(request: Request):
     try:
+        # Odbieranie surowych danych JSON bez walidacji Pydantic
+        update = await request.json()
+        logger.info(f"Received webhook data: {update}")
+        
         # Extract message details
-        if update.message is None:
+        message = update.get("message")
+        if message is None:
             # Skip updates without messages
             return {"status": "ok"}
         
-        chat_id = update.message.get("chat", {}).get("id")
-        message_text = update.message.get("text", "")
+        chat_id = message.get("chat", {}).get("id")
+        message_text = message.get("text", "")
         
         if not message_text:
             # Skip messages without text
