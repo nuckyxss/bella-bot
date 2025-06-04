@@ -1,0 +1,45 @@
+# Ignorowanie pliku .env zawierającego klucze API
+.env
+
+# Ignorowanie plików cache Pythona
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ignorowanie plików środowiskowych i lokalnych
+venv/
+ENV/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignorowanie plików logów
+*.log
+logs/
+log/
+
+# Ignorowanie lokalnych plików konfiguracyjnych
+instance/
+.webassets-cache
+
+# Ignorowanie plików systemowych
+.DS_Store
+Thumbs.db
