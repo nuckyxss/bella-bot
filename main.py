@@ -8,7 +8,10 @@ from pydantic import BaseModel
 # Korzystamy ze zmiennych środowiskowych ustawionych na Render.com
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 # Tworzenie instancji FastAPI - musi być PRZED użyciem middleware i deklaracjami endpointów
@@ -53,24 +56,37 @@ async def root():
 async def ping():
     return {"status": "OK"}
 
+@app.get("/test")
+async def test_endpoint():
+    logger.info("Endpoint testowy wywołany")
+    return {"status": "ok", "message": "API działa poprawnie"}
+
+@app.get("/")
+async def root():
+    return {"status": "Bot is running"}
+
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
     try:
         # Odbieranie surowych danych JSON bez walidacji Pydantic
         update = await request.json()
-        logger.info(f"Received webhook data: {update}")
+        logger.debug(f"Otrzymano webhook: {update}")
         
         # Extract message details
         message = update.get("message")
         if message is None:
             # Skip updates without messages
+            logger.info("Otrzymano update bez wiadomości, pomijam")
             return {"status": "ok"}
         
         chat_id = message.get("chat", {}).get("id")
         message_text = message.get("text", "")
         
+        logger.info(f"Otrzymano wiadomość: '{message_text}' od chat_id: {chat_id}")
+        
         if not message_text:
             # Skip messages without text
+            logger.info("Wiadomość bez tekstu, pomijam")
             return {"status": "ok"}
         
         logger.info(f"Received message from chat {chat_id}: {message_text}")
@@ -120,7 +136,9 @@ async def get_llm_response(message_text: str) -> str:
             return generated_text
     
     except Exception as e:
+        import traceback
         logger.error(f"Error getting LLM response: {e}")
+        logger.error(traceback.format_exc())
         return "Przepraszam, nie mogę teraz odpowiedzieć. Spróbuj ponownie później."
 
 async def send_telegram_message(chat_id: int, text: str) -> None:
