@@ -128,6 +128,5 @@ async def send_telegram_message(chat_id: int, text: str) -> None:
         logger.error(f"Error sending message to Telegram: {e}")
         raise
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# Usunięto blok if __name__ == "__main__", ponieważ w środowisku Render.com
+# serwer jest uruchamiany przez komendę startCommand z pliku render.yaml
